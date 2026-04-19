@@ -1,0 +1,444 @@
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..3f8fb374da447620f573b9d38f069067509992b0
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,438 @@
++<!doctype html>
++<html lang="en">
++<head>
++  <meta charset="UTF-8" />
++  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++  <title>Kindergarten Math Game</title>
++  <style>
++    :root {
++      --bg: #f8fbff;
++      --card: #ffffff;
++      --primary: #5b8def;
++      --secondary: #ffb84d;
++      --ok: #2aa96b;
++      --bad: #d94866;
++      --text: #243b53;
++    }
++
++    * { box-sizing: border-box; }
++
++    body {
++      margin: 0;
++      font-family: "Comic Sans MS", "Trebuchet MS", Arial, sans-serif;
++      background: radial-gradient(circle at top, #e9f2ff, var(--bg));
++      color: var(--text);
++      min-height: 100vh;
++      display: grid;
++      place-items: center;
++      padding: 16px;
++    }
++
++    .game {
++      width: min(860px, 100%);
++      background: var(--card);
++      border-radius: 20px;
++      box-shadow: 0 12px 30px rgba(24, 39, 75, 0.12);
++      padding: 20px;
++    }
++
++    h1 {
++      margin: 0 0 8px;
++      text-align: center;
++      color: #2557b8;
++      font-size: clamp(1.8rem, 5vw, 2.8rem);
++    }
++
++    .subtitle {
++      text-align: center;
++      margin: 0 0 18px;
++      font-size: 1.05rem;
++    }
++
++    .toolbar {
++      display: grid;
++      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
++      gap: 10px;
++      margin-bottom: 14px;
++    }
++
++    .panel {
++      background: #f6f9ff;
++      border: 2px dashed #bfd4ff;
++      border-radius: 12px;
++      padding: 10px;
++    }
++
++    .panel label {
++      display: block;
++      font-weight: 700;
++      margin-bottom: 6px;
++    }
++
++    .panel select,
++    .panel input {
++      width: 100%;
++      border: 2px solid #d7e4ff;
++      border-radius: 10px;
++      padding: 8px;
++      font-size: 1rem;
++      font-family: inherit;
++      background: white;
++    }
++
++    .stats {
++      display: flex;
++      gap: 10px;
++      justify-content: center;
++      flex-wrap: wrap;
++      margin-bottom: 16px;
++    }
++
++    .chip {
++      background: #f3f7ff;
++      border: 2px dashed #c7d8ff;
++      border-radius: 999px;
++      padding: 8px 14px;
++      font-weight: 700;
++      min-width: 130px;
++      text-align: center;
++    }
++
++    .question-card {
++      background: #fff8ea;
++      border: 3px solid #ffd58a;
++      border-radius: 16px;
++      padding: 18px;
++      text-align: center;
++      margin-bottom: 14px;
++    }
++
++    .visual-row {
++      display: flex;
++      justify-content: center;
++      gap: 8px;
++      flex-wrap: wrap;
++      margin: 8px 0 14px;
++      min-height: 44px;
++    }
++
++    .dot {
++      width: 34px;
++      height: 34px;
++      border-radius: 50%;
++      background: var(--primary);
++      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.12);
++    }
++
++    .dot.orange { background: var(--secondary); }
++
++    .equation {
++      font-size: clamp(2rem, 8vw, 3.2rem);
++      font-weight: 700;
++      letter-spacing: 1px;
++      margin-top: 4px;
++    }
++
++    .choices {
++      display: grid;
++      grid-template-columns: repeat(2, minmax(110px, 1fr));
++      gap: 12px;
++      margin: 14px 0;
++    }
++
++    button.choice {
++      border: none;
++      border-radius: 14px;
++      padding: 18px 12px;
++      font-size: 1.8rem;
++      font-weight: 700;
++      background: #ecf3ff;
++      color: #174ea6;
++      cursor: pointer;
++      transition: transform 0.08s ease, box-shadow 0.08s ease;
++      box-shadow: 0 4px 0 #c6dafb;
++    }
++
++    button.choice:hover,
++    button.choice:focus {
++      transform: translateY(-2px);
++      outline: none;
++    }
++
++    button.choice:active {
++      transform: translateY(1px);
++      box-shadow: 0 2px 0 #c6dafb;
++    }
++
++    .message {
++      min-height: 36px;
++      font-size: 1.2rem;
++      font-weight: 700;
++      text-align: center;
++      margin-top: 2px;
++    }
++
++    .ok { color: var(--ok); }
++    .bad { color: var(--bad); }
++
++    .stickers {
++      display: flex;
++      justify-content: center;
++      gap: 6px;
++      min-height: 32px;
++      margin: 6px 0;
++      font-size: 1.5rem;
++      flex-wrap: wrap;
++    }
++
++    .controls {
++      display: flex;
++      gap: 10px;
++      justify-content: center;
++      margin-top: 10px;
++      flex-wrap: wrap;
++    }
++
++    .btn {
++      border: none;
++      border-radius: 10px;
++      cursor: pointer;
++      font-weight: 700;
++      padding: 10px 14px;
++      font-size: 1rem;
++      font-family: inherit;
++    }
++
++    .btn-reset {
++      background: #ffe0e6;
++      color: #b22245;
++    }
++
++    .btn-hear {
++      background: #e4fff2;
++      color: #127247;
++    }
++
++    @media (max-width: 600px) {
++      .game { padding: 14px; }
++      .choices { grid-template-columns: 1fr 1fr; }
++    }
++  </style>
++</head>
++<body>
++  <main class="game" aria-live="polite">
++    <h1>🌟 Math Fun Time 🌟</h1>
++    <p class="subtitle">Choose the right number and collect stickers!</p>
++
++    <section class="toolbar">
++      <div class="panel">
++        <label for="mode">Game Mode</label>
++        <select id="mode">
++          <option value="add">Addition Only (+)</option>
++          <option value="sub">Subtraction Only (−)</option>
++          <option value="mix">Mixed (+ and −)</option>
++        </select>
++      </div>
++      <div class="panel">
++        <label for="maxValue">Biggest Number</label>
++        <input id="maxValue" type="number" min="5" max="20" value="10" />
++      </div>
++      <div class="panel">
++        <label for="voiceToggle">Read Question Aloud</label>
++        <select id="voiceToggle">
++          <option value="on">On</option>
++          <option value="off">Off</option>
++        </select>
++      </div>
++    </section>
++
++    <div class="stats">
++      <div class="chip">⭐ Stars: <span id="stars">0</span></div>
++      <div class="chip">🎯 Question: <span id="round">1</span></div>
++      <div class="chip">🏆 Best: <span id="best">0</span></div>
++    </div>
++
++    <section class="question-card">
++      <div id="visual" class="visual-row"></div>
++      <div id="equation" class="equation">1 + 1 = ?</div>
++    </section>
++
++    <section id="choices" class="choices"></section>
++    <div id="message" class="message"></div>
++    <div id="stickers" class="stickers"></div>
++
++    <div class="controls">
++      <button class="btn btn-hear" id="hearBtn">🔊 Hear Question</button>
++      <button class="btn btn-reset" id="resetBtn">Start Over</button>
++    </div>
++  </main>
++
++  <script>
++    const starsEl = document.getElementById('stars');
++    const roundEl = document.getElementById('round');
++    const bestEl = document.getElementById('best');
++    const visualEl = document.getElementById('visual');
++    const equationEl = document.getElementById('equation');
++    const choicesEl = document.getElementById('choices');
++    const messageEl = document.getElementById('message');
++    const stickersEl = document.getElementById('stickers');
++    const resetBtn = document.getElementById('resetBtn');
++    const hearBtn = document.getElementById('hearBtn');
++    const modeEl = document.getElementById('mode');
++    const maxValueEl = document.getElementById('maxValue');
++    const voiceToggleEl = document.getElementById('voiceToggle');
++
++    let stars = 0;
++    let round = 1;
++    let best = Number(localStorage.getItem('kg-math-best') || 0);
++    let currentAnswer = 0;
++    let currentQuestionText = '';
++
++    bestEl.textContent = best;
++
++    function randomInt(min, max) {
++      return Math.floor(Math.random() * (max - min + 1)) + min;
++    }
++
++    function getOperation() {
++      const mode = modeEl.value;
++      if (mode === 'add') return '+';
++      if (mode === 'sub') return '-';
++      return Math.random() > 0.5 ? '+' : '-';
++    }
++
++    function getMaxNumber() {
++      const value = Number(maxValueEl.value);
++      if (!Number.isFinite(value)) return 10;
++      return Math.max(5, Math.min(20, Math.floor(value)));
++    }
++
++    function createProblem() {
++      const maxNumber = getMaxNumber();
++      const a = randomInt(0, maxNumber);
++      const op = getOperation();
++      const b = randomInt(0, maxNumber);
++      const answer = op === '+' ? a + b : a - b;
++
++      if (answer < 0 || answer > maxNumber) {
++        return createProblem();
++      }
++
++      currentAnswer = answer;
++      currentQuestionText = `${a} ${op === '+' ? 'plus' : 'minus'} ${b} equals what?`;
++      equationEl.textContent = `${a} ${op} ${b} = ?`;
++      renderVisual(a, b, op);
++      renderChoices(answer, maxNumber);
++      roundEl.textContent = round;
++      messageEl.textContent = '';
++      messageEl.className = 'message';
++
++      if (voiceToggleEl.value === 'on') {
++        speak(currentQuestionText);
++      }
++    }
++
++    function renderVisual(a, b, op) {
++      visualEl.innerHTML = '';
++      for (let i = 0; i < a; i++) {
++        const dot = document.createElement('span');
++        dot.className = 'dot';
++        visualEl.appendChild(dot);
++      }
++
++      const symbol = document.createElement('strong');
++      symbol.textContent = op;
++      symbol.style.fontSize = '2rem';
++      symbol.style.margin = '0 6px';
++      visualEl.appendChild(symbol);
++
++      for (let i = 0; i < b; i++) {
++        const dot = document.createElement('span');
++        dot.className = 'dot orange';
++        visualEl.appendChild(dot);
++      }
++    }
++
++    function renderChoices(answer, maxNumber) {
++      const options = new Set([answer]);
++      while (options.size < 4) {
++        options.add(randomInt(0, maxNumber));
++      }
++      const shuffled = [...options].sort(() => Math.random() - 0.5);
++
++      choicesEl.innerHTML = '';
++      shuffled.forEach((value) => {
++        const btn = document.createElement('button');
++        btn.className = 'choice';
++        btn.type = 'button';
++        btn.textContent = value;
++        btn.setAttribute('aria-label', `Answer ${value}`);
++        btn.addEventListener('click', () => checkAnswer(value));
++        choicesEl.appendChild(btn);
++      });
++    }
++
++    function updateStickers() {
++      const count = Math.min(stars, 12);
++      stickersEl.textContent = '🎉'.repeat(count);
++    }
++
++    function speak(text) {
++      if (!('speechSynthesis' in window)) return;
++      window.speechSynthesis.cancel();
++      const utterance = new SpeechSynthesisUtterance(text);
++      utterance.rate = 0.9;
++      utterance.pitch = 1.1;
++      window.speechSynthesis.speak(utterance);
++    }
++
++    function checkAnswer(selected) {
++      if (selected === currentAnswer) {
++        stars += 1;
++        round += 1;
++        starsEl.textContent = stars;
++        messageEl.textContent = 'Great job! 🎉';
++        messageEl.className = 'message ok';
++
++        if (stars > best) {
++          best = stars;
++          localStorage.setItem('kg-math-best', best);
++          bestEl.textContent = best;
++        }
++
++        updateStickers();
++        setTimeout(createProblem, 500);
++      } else {
++        messageEl.textContent = `Good try! The answer was ${currentAnswer}.`;
++        messageEl.className = 'message bad';
++        stars = Math.max(0, stars - 1);
++        starsEl.textContent = stars;
++        updateStickers();
++        setTimeout(createProblem, 850);
++      }
++    }
++
++    function resetGame() {
++      stars = 0;
++      round = 1;
++      starsEl.textContent = stars;
++      roundEl.textContent = round;
++      updateStickers();
++      createProblem();
++    }
++
++    modeEl.addEventListener('change', resetGame);
++    maxValueEl.addEventListener('change', resetGame);
++    voiceToggleEl.addEventListener('change', () => {
++      if (voiceToggleEl.value === 'on') {
++        speak(currentQuestionText);
++      }
++    });
++    hearBtn.addEventListener('click', () => speak(currentQuestionText));
++    resetBtn.addEventListener('click', resetGame);
++
++    updateStickers();
++    createProblem();
++  </script>
++</body>
++</html>
